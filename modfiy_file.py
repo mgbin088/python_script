@@ -42,7 +42,6 @@ def add_host(file_name, host, group):
                         while next_line:
                             f_w.write(next_line)
                             next_line = f.readline()
-
                         f_w.truncate()
                         break
                     line = f.readline()
