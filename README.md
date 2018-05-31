@@ -10,7 +10,7 @@
 `指定位置插入`
 ---
 
-def add_host(file_name, host, group):
+`def add_host(file_name, host, group):
     print file_name, host, group
     res = {
         'status': True,
@@ -128,7 +128,7 @@ def del_host(file_name, host, group):
     except Exception as e:
         res['status'] = False
         res['msg'] = e
-    return res
+    return res`
 ---
 **格式化文本文件如下**
 #!/usr/bin/env python
