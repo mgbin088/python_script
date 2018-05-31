@@ -7,34 +7,46 @@ import re
 """
     re.search(r"(([01]?\d?\d|2[0-4]\d|25[0-5])\.){3}([01]?\d?\d|2[0-4]\d|25[0-5]\.)"
 """
+# 打开文件找到 地方， 替换
+# with open(file_name, 'r+') as f:
+#     line = f.readline()
+#     while line:
+#         if group in line:
+#             f.seek(f.tell(), 0)
+#             host = host + "\n"
+#             f.write(host)
+#             break
+#         line = f.readline()
+#      i += 1
 
 
 # find group add host
 def add_host(file_name, host, group):
+    print file_name, host, group
     res = {
         'status': True,
         'message': ''
     }
-    host = '' if not host else host
+    file_name = './deploy/hosts' if not file_name else file_name
     try:
         i = 1
-        with open(file_name, 'r+') as f:
-            line = f.readline()
-            while line:
-                if group in line:
-                    # f.seek(f.tell(), 0)
-                    host = host + "\n"
-                    f.write(host)
-                    break
+        with open(file_name, 'r') as f:
+            with open(file_name, 'r+') as f_w:
                 line = f.readline()
-                i += 1
-            else:
-                return False, 'start null...'
-        res['status'] = host(file_name)
-        if res['status']:
-            pass
-        else:
-            res['message'] = 'delect item false!!'
+                while line:
+                    if group in line:
+                        f_w.seek(f.tell(), 0)
+                        host = host + "\n"
+                        f_w.write(host)
+                        next_line = f.readline()
+                        while next_line:
+                            f_w.write(next_line)
+                            next_line = f.readline()
+
+                        f_w.truncate()
+                        break
+                    line = f.readline()
+                    i += 1
     except IOError:
         res['status'] = False
         res['message'] = 'file wirte false！'
@@ -47,7 +59,7 @@ def del_host(file_name, host, group):
         'status': True,
         'message': ''
     }
-    host = '' if not host else host
+    file_name = './deploy/hosts' if not file_name else file_name
     try:
         i = 1
         with open(file_name, 'r') as f:
@@ -92,39 +104,44 @@ def del_host(file_name, host, group):
             res['message'] = '_this == _end！'
         else:
             print 'start, end', _this, _end
-            with open(file_name, 'r') as f_r:
-                with open(file_name, 'r+') as f_w:
-                    f_r.seek(_this, 0)
-                    line = f_r.readline()
-                    host_list = []
-                    while line and f_r.tell() <= _end:
-                        host = "192.168.100.44" if not host else host
-                        print(line, f_r.tell())
-                        host_list.append(f_r.tell())
-                        if line.strip().replace('/n', '') == host:
-                            _host = f_r.tell()
-                            print f_r.tell()
-                            for i in host_list:
-                                if i == _host:
-                                    now_location = host_list[host_list.index(i) - 1]
-                            print 'now_location', now_location
-                            print 'host it..', line, i
-                            f_w.seek(now_location, 0)
-                            # f_r.readline()
-                            print 'i', i, line
-                            next_line = f_r.readline()
-                            print 'i--', i, next_line
-                            # next_line = line
-                            while next_line:
-                                # print 'next line', next_line
-                                f_w.write(next_line)
-                                next_line = f_r.readline()
-                            # break
-                            f_w.truncate()
+            try:
+                with open(file_name, 'r') as f_r:
+                    with open(file_name, 'r+') as f_w:
+                        f_r.seek(_this, 0)
                         line = f_r.readline()
+                        host_list = []
+                        while line and f_r.tell() <= _end:
+                            host = "192.168.100.44" if not host else host
+                            print(line, f_r.tell())
+                            host_list.append(f_r.tell())
+                            if line.strip().replace('/n', '') == host:
+                                _host = f_r.tell()
+                                print f_r.tell()
+                                for i in host_list:
+                                    if i == _host:
+                                        now_location = host_list[host_list.index(i) - 1]
+                                print 'now_location', now_location
+                                print 'host it..', line, i
+                                f_w.seek(now_location, 0)
+                                # f_r.readline()
+                                print 'i', i, line
+                                next_line = f_r.readline()
+                                print 'i--', i, next_line
+                                # next_line = line
+                                while next_line:
+                                    # print 'next line', next_line
+                                    f_w.write(next_line)
+                                    next_line = f_r.readline()
+                                # break
+                                f_w.truncate()
+                            line = f_r.readline()
+            except Exception as e:
+                res['status'] = False
+                res['msg'] = e
 
     except Exception as e:
-        pass
+        res['status'] = False
+        res['msg'] = e
     return res
 
 
@@ -133,4 +150,4 @@ if __name__ == '__main__':
     # fr = open('./hosts', 'r')
     # c = fr.readline()
     # print 'c:: ', c
-    del_host('./hosts', '192.168.99.252', 'vue_test')
+    del_host('./hosts', '192.168.99.25x', 'vue_test')
