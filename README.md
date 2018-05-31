@@ -7,9 +7,9 @@
 * 发送邮件接口等
 ---
 ## 不占用大量内存，不生成副本文件的前提下 使用Python 对文件进行 插入 删除 替换
-`指定位置插入`
+## 指定位置插入
 
-`def add_host(file_name, host, group):
+def add_host(file_name, host, group):
     print file_name, host, group
     res = {
         'status': True,
@@ -38,7 +38,7 @@
         res['status'] = False
         res['message'] = 'file wirte false！'
     return res
-`指定位置删除`
+## 指定位置删除
 def del_host(file_name, host, group):
     res = {
         'status': True,
