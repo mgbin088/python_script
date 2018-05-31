@@ -1,10 +1,134 @@
 # python_script
 **这是一些Python脚本**
+* 不生成副本文件的前提下 在文件的指定位置 插入 删除 替换内容
 * ansible-Python API
 * 链接Redis
 * Python格式化文件
 * 发送邮件接口等
+---
+## 不占用大量内存，不生成副本文件的前提下 使用Python 对文件进行 插入 删除 替换
+`指定位置插入`
+---
 
+def add_host(file_name, host, group):
+    print file_name, host, group
+    res = {
+        'status': True,
+        'message': ''
+    }
+    file_name = './deploy/hosts' if not file_name else file_name
+    try:
+        i = 1
+        with open(file_name, 'r') as f:
+            with open(file_name, 'r+') as f_w:
+                line = f.readline()
+                while line:
+                    if group in line:
+                        f_w.seek(f.tell(), 0)
+                        host = host + "\n"
+                        f_w.write(host)
+                        next_line = f.readline()
+                        while next_line:
+                            f_w.write(next_line)
+                            next_line = f.readline()
+                        f_w.truncate()
+                        break
+                    line = f.readline()
+                    i += 1
+    except IOError:
+        res['status'] = False
+        res['message'] = 'file wirte false！'
+    return res
+`指定位置删除`
+def del_host(file_name, host, group):
+    res = {
+        'status': True,
+        'message': ''
+    }
+    file_name = './deploy/hosts' if not file_name else file_name
+    try:
+        i = 1
+        with open(file_name, 'r') as f:
+            line = f.readline()
+            # print f.tell()
+            while line:
+                if group in line:
+                    _this = f.tell()
+                    break
+                line = f.readline()
+                i += 1
+            else:
+                _this = False
+
+        i = i + 1
+        with open(file_name, 'r') as f_r:
+            lines = f_r.readlines()
+            f_r.seek(_this, 0)
+            line = f_r.readline()
+            while line:
+                if "[" in line:
+                    _end = f_r.tell()
+                    break
+                if i == len(lines):
+                    print i, lines
+                    _end = f_r.tell()
+                    print 'last line', _end
+                    break
+                line = f_r.readline()
+                i += 1
+            else:
+                _end = False
+        # print 'start, end', _this, _end
+        if _this == False:
+            res['status'] = False
+            res['message'] = 'start  false！'
+        elif _end == False:
+            res['status'] = False
+            res['message'] = 'end  false！'
+        elif _this == _end:
+            res['status'] = False
+            res['message'] = '_this == _end！'
+        else:
+            print 'start, end', _this, _end
+            try:
+                with open(file_name, 'r') as f_r:
+                    with open(file_name, 'r+') as f_w:
+                        f_r.seek(_this, 0)
+                        line = f_r.readline()
+                        host_list = []
+                        while line and f_r.tell() <= _end:
+                            host = "192.168.100.44" if not host else host
+                            print(line, f_r.tell())
+                            host_list.append(f_r.tell())
+                            if line.strip().replace('/n', '') == host:
+                                _host = f_r.tell()
+                                print f_r.tell()
+                                for i in host_list:
+                                    if i == _host:
+                                        now_location = host_list[host_list.index(i) - 1]
+                                print 'now_location', now_location
+                                print 'host it..', line, i
+                                f_w.seek(now_location, 0)
+                                # f_r.readline()
+                                print 'i', i, line
+                                next_line = f_r.readline()
+                                print 'i--', i, next_line
+                                # next_line = line
+                                while next_line:
+                                    # print 'next line', next_line
+                                    f_w.write(next_line)
+                                    next_line = f_r.readline()
+                                # break
+                                f_w.truncate()
+                            line = f_r.readline()
+            except Exception as e:
+                res['status'] = False
+                res['msg'] = e
+
+    except Exception as e:
+        res['status'] = False
+        res['msg'] = e
+    return res
 ---
 **格式化文本文件如下**
 #!/usr/bin/env python
