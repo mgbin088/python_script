@@ -8,7 +8,6 @@
 ---
 ## 不占用大量内存，不生成副本文件的前提下 使用Python 对文件进行 插入 删除 替换
 `指定位置插入`
----
 
 `def add_host(file_name, host, group):
     print file_name, host, group
